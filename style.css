@@ -1,90 +1,187 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+  --bg: #0e1517;
+  --surface: #162024;
+  --surface-2: #1d2a2f;
+  --line: #2a3a40;
+  --text: #e6eef0;
+  --muted: #8ea2a8;
+  --accent: #e6ab02;
+  --radius: 14px;
+  --font-head: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background-color: #eef2f5; /* Clean light gray background */
-    height: 100vh;
-    overflow: hidden; /* Stops the whole page from scrolling */
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* 🏗️ The Master CSS Grid */
-.dashboard-wrapper {
-    display: grid;
-    height: 100vh;
-    padding: 10px;
-    gap: 12px;
-    /* This defines the width and height of our columns and rows */
-    grid-template-columns: 280px 1fr 320px; 
-    grid-template-rows: 60px 1fr 80px;
-    /* This physically draws the layout areas! */
-    grid-template-areas:
-        "nav nav nav"
-        "sidebar map panel"
-        "sidebar stats panel";
+.dashboard {
+  display: grid;
+  height: 100vh;
+  padding: 12px;
+  gap: 12px;
+  grid-template-columns: 270px 1fr 320px;
+  grid-template-rows: 64px 1fr 84px;
+  grid-template-areas:
+    "nav nav nav"
+    "side map panel"
+    "stats stats stats";
 }
 
-/* 🎨 Styling the individual zones */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  overflow-y: auto;
+}
+
+h1, h2 { font-family: var(--font-head); letter-spacing: -0.01em; }
+h2 { font-size: 15px; color: var(--text); }
+p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* Top bar */
 .top-nav {
-    grid-area: nav;
-    background: #ffffff;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  grid-area: nav;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0 18px;
 }
-
-.left-sidebar {
-    grid-area: sidebar;
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 { font-size: 18px; line-height: 1.1; }
+.brand p { font-size: 12px; }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: conic-gradient(#d95f02 0 20%, #7570b3 0 40%, #66a61e 0 60%, #e6ab02 0 80%, #e7298a 0);
+  box-shadow: inset 0 0 0 5px var(--surface);
+  outline: 2px solid var(--line);
 }
+.search-bar {
+  width: 240px; padding: 9px 14px;
+  background: var(--surface-2); color: var(--muted);
+  border: 1px solid var(--line); border-radius: 999px;
+  font: inherit; font-size: 13px;
+}
+.search-bar { color: var(--text); }
+.search-bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* Sidebar filters */
+.left-sidebar { grid-area: side; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; }
+.link-btn {
+  background: none; border: 0; color: var(--accent);
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.link-btn:hover { text-decoration: underline; }
+
+.filter-group { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+
+.filter-label {
+  --c: #888;
+  display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid transparent; border-left: 4px solid var(--c);
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 13px; cursor: pointer;
+  transition: background .15s, opacity .15s, border-color .15s;
+}
+.filter-label:hover { border-color: var(--c); }
+.filter-label:has(input:not(:checked)) { opacity: .45; border-left-color: var(--line); }
+.filter-label input { accent-color: var(--c); width: 14px; height: 14px; cursor: pointer; }
+.filter-label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter-count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Map */
 .map-container {
-    grid-area: map;
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden; /* Keeps the map inside the curved borders */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  grid-area: map;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+#map { height: 100%; width: 100%; background: var(--bg); }
+.leaflet-control-attribution { font-size: 10px; }
+
+/* Details panel */
+.right-panel { grid-area: panel; }
+.info-empty { margin-top: 18px; text-align: center; padding: 30px 8px; color: var(--muted); }
+.empty-icon {
+  width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%;
+  border: 2px dashed var(--line);
+  background: radial-gradient(circle, var(--line) 0 3px, transparent 4px);
 }
 
-#map {
-    height: 100%;
-    width: 100%;
-}
+.info-card { --c: #888; margin-top: 14px; display: flex; flex-direction: column; gap: 14px; animation: slide .25s ease-out; }
+@keyframes slide { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
 
-.right-panel {
-    grid-area: panel;
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+.rock-banner {
+  position: relative; height: 130px; border-radius: 10px; overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--c) 35%, transparent) 9px 11px),
+    color-mix(in srgb, var(--c) 22%, var(--surface-2));
+  border: 1px solid var(--c);
 }
+.rock-code {
+  position: absolute; left: 14px; bottom: 10px;
+  font-family: var(--font-head); font-weight: 700; font-size: 44px; line-height: 1;
+  color: var(--text);
+}
+.info-card h3 { font-family: var(--font-head); font-size: 18px; line-height: 1.25; color: var(--c); }
 
+.data-row {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.data-label { color: var(--muted); }
+.data-value { text-align: right; font-weight: 600; }
+
+/* Stats bar */
 .bottom-stats {
-    grid-area: stats;
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  grid-area: stats;
+  display: flex; align-items: center; gap: 28px; padding: 0 20px; overflow: hidden;
+}
+.stat { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--muted); }
+.stat strong { font-family: var(--font-head); font-size: 22px; color: var(--text); }
+.stat-source { margin-left: auto; font-size: 12px; }
+
+/* Map polygon states + tooltip */
+.leaflet-interactive { transition: fill-opacity .15s; }
+.rock-tip {
+  background: var(--surface); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; font: 500 12px var(--font-body); box-shadow: none;
+}
+.rock-tip::before { display: none; }
+
+/* Responsive: stack on small screens */
+@media (max-width: 960px) {
+  body { height: auto; overflow: auto; }
+  .dashboard {
+    height: auto; grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: "nav" "map" "side" "panel" "stats";
+  }
+  .map-container { height: 55vh; }
+  .search-bar { display: none; }
+  .bottom-stats { flex-wrap: wrap; padding: 14px 18px; gap: 12px 24px; }
+  .stat-source { margin-left: 0; width: 100%; }
 }
 
-/* Temporary headers styling */
-h2, h3 {
-    color: #2c3e50;
-    font-size: 16px;
-    margin-bottom: 10px;
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
-p {
-    color: #7f8c8d;
-    font-size: 13px;
-}
+
+/* Area analytics bar */
+.area-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.area-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); }
+.area-bar span { height: 100%; transition: flex-grow .3s; min-width: 2px; }
+.area-legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 11px; color: var(--muted); }
+.area-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--c); }
+.area-legend b { color: var(--text); font-weight: 600; }

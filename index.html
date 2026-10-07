@@ -4,46 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyo East GIS Dashboard</title>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>Oyo East Geological Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="dashboard-wrapper">
-        <!-- 1. Top Navigation -->
+    <div class="dashboard">
         <header class="top-nav">
-            <h2>🌍 Oyo East Geological Dashboard</h2>
-            <input type="text" placeholder="Search map..." class="search-bar" disabled>
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <div>
+                    <h1>Oyo East Geology</h1>
+                    <p>Basement Complex, southwestern Nigeria</p>
+                </div>
+            </div>
+            <input type="search" class="search-bar" id="search" placeholder="Search map code or rock type"
+                aria-label="Search by map code or rock type" autocomplete="off">
         </header>
 
-        <!-- 2. Left Sidebar -->
-        <aside class="left-sidebar">
-            <h3>🎛️️ Filters</h3>
-            <p>Checkboxes will go here next week...</p>
+        <aside class="panel left-sidebar" aria-label="Rock type filters">
+            <div class="panel-head">
+                <h2>Rock types</h2>
+                <button type="button" id="toggle-all" class="link-btn">Hide all</button>
+            </div>
+            <div id="filters" class="filter-group"></div>
         </aside>
 
-        <!-- 3. Center Map Stage -->
         <main class="map-container">
             <div id="map"></div>
         </main>
 
-        <!-- 4. Right Details Panel -->
-        <aside class="right-panel">
-            <h3>📄 Formation Details</h3>
-            <p>Click a rock on the map to see its data here...</p>
+        <aside class="panel right-panel" aria-live="polite">
+            <h2>Formation details</h2>
+            <div id="info-panel" class="info-empty">
+                <div class="empty-icon" aria-hidden="true"></div>
+                <p>Select a formation on the map to see its rock type, map code and where it sits.</p>
+            </div>
         </aside>
 
-        <!-- 5. Bottom Stats -->
-        <footer class="bottom-stats">
-            <h3>📊 Dashboard Statistics</h3>
-            <p>Total Formations: -- | Source: NGSA</p>
+        <footer class="panel bottom-stats" id="stats">
+            <div class="stat"><strong id="stat-shown">--</strong><span>formations</span></div>
+            <div class="stat"><strong id="stat-area">--</strong><span>km&sup2; mapped</span></div>
+            <div class="area-wrap">
+                <div id="area-bar" class="area-bar" role="img" aria-label="Area share by rock type"></div>
+                <div id="area-legend" class="area-legend"></div>
+            </div>
         </footer>
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
     <script src="script.js"></script>
 </body>
 
