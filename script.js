@@ -1,32 +1,32 @@
 // 1. Initialize the map focus
 const map = L.map('map').setView([7.85, 3.93], 11);
 
-// 2. Add base map tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+// 2. Add Esri Satellite Base Map
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
 // 3. Official NGSA Color Mapping Function
 function getRockColor(rockType) {
     switch (rockType) {
         case 'Migmatite': 
-            return '#d95f02'; // Orange
+            return '#d95f02'; 
         case 'Marble': 
-            return '#7570b3'; // Purple
+            return '#7570b3'; 
         case 'Undifferentiated Schist and Gneiss': 
-            return '#66a61e'; // Olive Green
+            return '#66a61e'; 
         case 'Biotite, biotite hornblende gneiss': 
-            return '#e6ab02'; // Gold/Yellow
+            return '#e6ab02'; 
         case 'Biotite, Garnet gneiss and Schist': 
-            return '#e7298a'; // Pink
+            return '#e7298a'; 
         case 'Silicified Sheared rocks and Quartz veins': 
-            return '#1b9e77'; // Teal/Green
+            return '#1b9e77'; 
         default: 
-            return '#3388ff'; // Fallback Blue
+            return '#3388ff'; 
     }
 }
 
-// 4. Click Interactivity Function (Popups)
+// 4. Click Interactivity Function (Temporary Popup)
 function onEachFeature(feature, layer) {
     if (feature.properties) {
         const rockType = feature.properties["Rock Type"] || "Unknown Formation";
@@ -42,7 +42,7 @@ function onEachFeature(feature, layer) {
     }
 }
 
-// 5. Fetch spatial data, render polygons, bind popups
+// 5. Fetch spatial data and render polygons
 fetch('Oyo-East-Digitized.geojson')
     .then(response => response.json())
     .then(data => {
@@ -50,40 +50,12 @@ fetch('Oyo-East-Digitized.geojson')
             style: function(feature) {
                 return {
                     fillColor: getRockColor(feature.properties["Rock Type"]),
-                    weight: 2,
-                    color: 'white',
-                    fillOpacity: 0.7
+                    weight: 2, // Border thickness
+                    color: '#ffffff', // White borders look striking on satellite
+                    fillOpacity: 0.6 // Slightly transparent to see the terrain underneath
                 };
             },
             onEachFeature: onEachFeature
         }).addTo(map);
-
-        // Render the map legend
-        createLegend();
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
-
-// 6. Dynamic Legend Generator Function
-function createLegend() {
-    const legendContainer = document.getElementById('legend');
-    const rockFormations = [
-        { name: 'Migmatite', color: '#d95f02' },
-        { name: 'Marble', color: '#7570b3' },
-        { name: 'Undifferentiated Schist and Gneiss', color: '#66a61e' },
-        { name: 'Biotite, biotite hornblende gneiss', color: '#e6ab02' },
-        { name: 'Biotite, Garnet gneiss and Schist', color: '#e7298a' },
-        { name: 'Silicified Sheared rocks and Quartz veins', color: '#1b9e77' }
-    ];
-
-    let html = '<h4>Geological Legend</h4>';
-    rockFormations.forEach(rock => {
-        html += `
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: ${rock.color};"></span>
-                <span>${rock.name}</span>
-            </div>
-        `;
-    });
-
-    legendContainer.innerHTML = html;
-}

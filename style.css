@@ -1,77 +1,90 @@
 * {
     box-sizing: border-box;
-}
-
-body, html {
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #eef2f5; /* Clean light gray background */
+    height: 100vh;
+    overflow: hidden; /* Stops the whole page from scrolling */
+}
+
+/* 🏗️ The Master CSS Grid */
+.dashboard-wrapper {
+    display: grid;
+    height: 100vh;
+    padding: 10px;
+    gap: 12px;
+    /* This defines the width and height of our columns and rows */
+    grid-template-columns: 280px 1fr 320px; 
+    grid-template-rows: 60px 1fr 80px;
+    /* This physically draws the layout areas! */
+    grid-template-areas:
+        "nav nav nav"
+        "sidebar map panel"
+        "sidebar stats panel";
+}
+
+/* 🎨 Styling the individual zones */
+.top-nav {
+    grid-area: nav;
+    background: #ffffff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.left-sidebar {
+    grid-area: sidebar;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.map-container {
+    grid-area: map;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden; /* Keeps the map inside the curved borders */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 #map {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
 }
 
-/* Floating UI Map Legend */
-.legend {
-    position: absolute;
-    bottom: 30px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(4px);
-    padding: 12px 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    max-width: 300px;
-    font-size: 12px;
-    line-height: 1.4;
+.right-panel {
+    grid-area: panel;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.legend h4 {
-    margin: 0 0 8px 0;
-    font-size: 13px;
-    color: #1a252f;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 4px;
-}
-
-.legend-item {
+.bottom-stats {
+    grid-area: stats;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
     display: flex;
     align-items: center;
-    margin-bottom: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.legend-color {
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    border-radius: 3px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    flex-shrink: 0;
+/* Temporary headers styling */
+h2, h3 {
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
-
-/* Mobile Responsiveness Rules */
-@media (max-width: 600px) {
-    .legend {
-        bottom: 20px;
-        right: 10px;
-        left: 10px;
-        max-width: none;
-        font-size: 11px;
-        padding: 10px;
-    }
-
-    .legend h4 {
-        font-size: 11px;
-    }
-
-    .legend-color {
-        width: 14px;
-        height: 14px;
-    }
+p {
+    color: #7f8c8d;
+    font-size: 13px;
 }

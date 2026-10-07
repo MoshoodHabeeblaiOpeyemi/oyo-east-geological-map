@@ -4,17 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyo East Geological Map</title>
+    <title>Oyo East GIS Dashboard</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="map"></div>
+    <div class="dashboard-wrapper">
+        <!-- 1. Top Navigation -->
+        <header class="top-nav">
+            <h2>🌍 Oyo East Geological Dashboard</h2>
+            <input type="text" placeholder="Search map..." class="search-bar" disabled>
+        </header>
 
-    <!-- UI Legend Overlay -->
-    <div id="legend" class="legend"></div>
+        <!-- 2. Left Sidebar -->
+        <aside class="left-sidebar">
+            <h3>🎛️️ Filters</h3>
+            <p>Checkboxes will go here next week...</p>
+        </aside>
+
+        <!-- 3. Center Map Stage -->
+        <main class="map-container">
+            <div id="map"></div>
+        </main>
+
+        <!-- 4. Right Details Panel -->
+        <aside class="right-panel">
+            <h3>📄 Formation Details</h3>
+            <p>Click a rock on the map to see its data here...</p>
+        </aside>
+
+        <!-- 5. Bottom Stats -->
+        <footer class="bottom-stats">
+            <h3>📊 Dashboard Statistics</h3>
+            <p>Total Formations: -- | Source: NGSA</p>
+        </footer>
+    </div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
