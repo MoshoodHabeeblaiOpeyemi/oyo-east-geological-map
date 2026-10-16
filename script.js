@@ -570,7 +570,7 @@ document.addEventListener("click", (e) => {
   if (!e.target.closest(".search-wrap")) resultsBox.hidden = true;
 });
 
-// ROBUST ISOLATED COMMUNITY LOADING
+// ROBUST ISOLATED COMMUNITY LOADING (v4 CACHE KEY BUMPED)
 async function loadCommunities() {
   let local = [];
   try {
@@ -582,7 +582,7 @@ async function loadCommunities() {
 
   let els = [];
   try {
-    const key = "oyo-east-places-final-v2";
+    const key = "oyo-east-places-v4"; // BUMPED TO V4 FOR FRESH VERCEL CACHE CLEAR 💥
     try {
       els = JSON.parse(localStorage.getItem(key));
     } catch (e) {}
