@@ -2,65 +2,77 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyo East Geological Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oyo East Geological Dashboard</title>
+
+  <!-- Tab Icon (SVG Color Wheel Favicon) -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 0 A16 16 0 0 1 29.86 8 L16 16 Z' fill='%23f27e9c'/><path d='M29.86 8 A16 16 0 0 1 29.86 24 L16 16 Z' fill='%23c36bd1'/><path d='M29.86 24 A16 16 0 0 1 16 32 L16 16 Z' fill='%234b6b17'/><path d='M16 32 A16 16 0 0 1 2.14 24 L16 16 Z' fill='%235ac2dc'/><path d='M2.14 24 A16 16 0 0 1 2.14 8 L16 16 Z' fill='%23b5a31c'/><path d='M2.14 8 A16 16 0 0 1 16 0 L16 16 Z' fill='%2325d45c'/><circle cx='16' cy='16' r='6' fill='%23162024'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="dashboard">
-        <header class="top-nav">
-            <div class="brand">
-                <span class="brand-mark" aria-hidden="true"></span>
-                <div>
-                    <h1>Oyo East Geology</h1>
-                    <p>Basement Complex, southwestern Nigeria</p>
-                </div>
-            </div>
-            <input type="search" class="search-bar" id="search" placeholder="Search map code or rock type"
-                aria-label="Search by map code or rock type" autocomplete="off">
-        </header>
+  <div class="dashboard">
+    <header class="top-nav">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Oyo East Geology</h1>
+          <p>Basement Complex geology, OSGOF 2017 and OpenStreetMap boundaries</p>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <input type="search" class="search-bar" id="search"
+          placeholder="Search a community or map code, then press Enter" aria-label="Search a community or map code"
+          autocomplete="off">
+        <ul id="search-results" class="search-results" hidden></ul>
+      </div>
+    </header>
 
-        <aside class="panel left-sidebar" aria-label="Rock type filters">
-            <div class="panel-head">
-                <h2>Rock types</h2>
-                <button type="button" id="toggle-all" class="link-btn">Hide all</button>
-            </div>
-            <div id="filters" class="filter-group"></div>
-        </aside>
+    <aside class="panel left-sidebar" aria-label="Rock type filters">
+      <div class="panel-head">
+        <h2>Rock types</h2>
+        <button type="button" id="toggle-all" class="link-btn">Hide all</button>
+      </div>
+      <div id="filters" class="filter-group"></div>
+    </aside>
 
-        <main class="map-container">
-            <div id="map"></div>
-        </main>
+    <main class="map-container">
+      <div id="map"></div>
+    </main>
 
-        <aside class="panel right-panel" aria-live="polite">
-            <h2>Formation details</h2>
-            <div id="info-panel" class="info-empty">
-                <div class="empty-icon" aria-hidden="true"></div>
-                <p>Select a formation on the map to see its rock type, map code and where it sits.</p>
-            </div>
-        </aside>
+    <aside class="panel right-panel" aria-live="polite">
+      <h2>Formation details</h2>
+      <div id="info-panel" class="info-empty">
+        <div class="empty-icon" aria-hidden="true"></div>
+        <p>Select a formation on the map to see its rock type, map code and where it sits.</p>
+      </div>
+    </aside>
 
-        <footer class="panel bottom-stats" id="stats">
-            <div class="stat"><strong id="stat-shown">--</strong><span>formations</span></div>
-            <div class="stat"><strong id="stat-area">--</strong><span>km&sup2; mapped</span></div>
-            <div class="area-wrap">
-                <div id="area-bar" class="area-bar" role="img" aria-label="Area share by rock type"></div>
-                <div id="area-legend" class="area-legend"></div>
-            </div>
-        </footer>
-    </div>
+    <footer class="panel bottom-stats" id="stats">
+      <div class="stat-metrics">
+        <div class="stat"><strong id="stat-shown">--</strong><span>map units</span></div>
+        <div class="stat"><strong id="stat-types">--</strong><span>rock types</span></div>
+        <div class="stat"><strong id="stat-area">--</strong><span>km&sup2; mapped</span></div>
+      </div>
+      <div class="area-wrap">
+        <div id="area-bar" class="area-bar" role="img" aria-label="Area share by rock type"></div>
+        <div id="area-legend" class="area-legend"></div>
+      </div>
+    </footer>
+  </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
-    <script src="script.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

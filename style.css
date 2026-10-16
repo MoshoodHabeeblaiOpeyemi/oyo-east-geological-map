@@ -54,23 +54,24 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 0 18px;
+  position: relative; z-index: 3000;
 }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand h1 { font-size: 18px; line-height: 1.1; }
 .brand p { font-size: 12px; }
 .brand-mark {
   width: 34px; height: 34px; border-radius: 9px;
-  background: conic-gradient(#d95f02 0 20%, #7570b3 0 40%, #66a61e 0 60%, #e6ab02 0 80%, #e7298a 0);
+  background: conic-gradient(#f27e9c 0 17%, #c36bd1 0 34%, #4b6b17 0 50%, #5ac2dc 0 67%, #b5a31c 0 83%, #25d45c 0);
   box-shadow: inset 0 0 0 5px var(--surface);
   outline: 2px solid var(--line);
 }
+.search-wrap { position: relative; width: 340px; max-width: 100%; }
 .search-bar {
-  width: 240px; padding: 9px 14px;
-  background: var(--surface-2); color: var(--muted);
+  width: 100%; padding: 9px 14px;
+  background: var(--surface-2); color: var(--text);
   border: 1px solid var(--line); border-radius: 999px;
   font: inherit; font-size: 13px;
 }
-.search-bar { color: var(--text); }
 .search-bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Sidebar filters */
@@ -89,8 +90,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
   display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 10px;
   padding: 9px 10px;
   border: 1px solid transparent; border-left: 4px solid var(--c);
-  border-radius: 8px;
-  background: var(--surface-2);
+  border-radius: 8px; background: var(--surface-2);
   font-size: 13px; cursor: pointer;
   transition: background .15s, opacity .15s, border-color .15s;
 }
@@ -123,7 +123,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 @keyframes slide { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
 
 .rock-banner {
-  position: relative; height: 130px; border-radius: 10px; overflow: hidden;
+  position: relative; height: 110px; border-radius: 10px; overflow: hidden;
   background:
     repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--c) 35%, transparent) 9px 11px),
     color-mix(in srgb, var(--c) 22%, var(--surface-2));
@@ -131,7 +131,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 }
 .rock-code {
   position: absolute; left: 14px; bottom: 10px;
-  font-family: var(--font-head); font-weight: 700; font-size: 44px; line-height: 1;
+  font-family: var(--font-head); font-weight: 700; font-size: 40px; line-height: 1;
   color: var(--text);
 }
 .info-card h3 { font-family: var(--font-head); font-size: 18px; line-height: 1.25; color: var(--c); }
@@ -142,46 +142,135 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 }
 .data-label { color: var(--muted); }
 .data-value { text-align: right; font-weight: 600; }
+.insight-text { text-align: left; font-weight: 400; color: var(--text); line-height: 1.45; }
+.risk-text { color: #f87171; background: rgba(248,113,113,0.08); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); }
 
-/* Stats bar */
+/* Stats bar - Desktop */
 .bottom-stats {
   grid-area: stats;
   display: flex; align-items: center; gap: 28px; padding: 0 20px; overflow: hidden;
 }
+.stat-metrics { display: flex; align-items: center; gap: 24px; flex-shrink: 0; }
 .stat { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--muted); }
 .stat strong { font-family: var(--font-head); font-size: 22px; color: var(--text); }
-.stat-source { margin-left: auto; font-size: 12px; }
 
-/* Map polygon states + tooltip */
-.leaflet-interactive { transition: fill-opacity .15s; }
+/* Map Tooltip */
 .rock-tip {
   background: var(--surface); color: var(--text); border: 1px solid var(--line);
-  border-radius: 8px; font: 500 12px var(--font-body); box-shadow: none;
+  border-radius: 6px; font: 600 12px var(--font-body); padding: 4px 8px; box-shadow: none;
 }
 .rock-tip::before { display: none; }
 
-/* Responsive: stack on small screens */
+.data-row.stack { flex-direction: column; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; text-align: left; }
+.chips span { background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 500; }
+.chips em { color: var(--muted); font-size: 12px; font-weight: 400; }
+
+/* Area bar & Desktop Legend */
+.area-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.area-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); }
+.area-bar span { height: 100%; transition: flex-grow .3s; min-width: 2px; }
+
+.area-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 11px; color: var(--muted); }
+.legend-row { display: inline-flex; align-items: center; gap: 6px; }
+.legend-label { display: inline-flex; align-items: center; }
+.legend-label i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--c); flex-shrink: 0; }
+.legend-bar-track { display: none; } /* Hidden on desktop */
+.legend-pct { color: var(--text); font-weight: 600; }
+
+/* Search dropdown */
+.search-results {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  list-style: none; max-height: 340px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.45); padding: 6px; z-index: 4000;
+}
+.search-results[hidden] { display: none; }
+.sr-group { padding: 8px 10px 4px; font-size: 11px; color: var(--muted); }
+.sr-item {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  color: var(--text); font: inherit; font-size: 13px; padding: 8px 10px;
+  border-radius: 8px; cursor: pointer;
+}
+.sr-item:hover, .sr-item:focus-visible { background: var(--surface-2); outline: none; }
+.sr-item small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sr-empty { padding: 10px; font-size: 13px; color: var(--muted); }
+
+/* RESPONSIVE: Mobile Layout Optimization */
 @media (max-width: 960px) {
   body { height: auto; overflow: auto; }
   .dashboard {
     height: auto; grid-template-columns: 1fr;
     grid-template-rows: auto;
-    grid-template-areas: "nav" "map" "side" "panel" "stats";
+    grid-template-areas:
+      "nav"
+      "map"
+      "side"
+      "panel"
+      "stats";
   }
-  .map-container { height: 55vh; }
-  .search-bar { display: none; }
-  .bottom-stats { flex-wrap: wrap; padding: 14px 18px; gap: 12px 24px; }
-  .stat-source { margin-left: 0; width: 100%; }
-}
+  .map-container { height: 50vh; min-height: 350px; }
+  .top-nav { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+  .search-wrap { width: 100%; }
 
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
-}
+  .bottom-stats {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 14px;
+    height: auto;
+    overflow: visible;
+  }
+  .stat-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+  .stat {
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .stat strong { font-size: 20px; line-height: 1; }
+  .stat span { font-size: 11px; text-transform: lowercase; }
 
-/* Area analytics bar */
-.area-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.area-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); }
-.area-bar span { height: 100%; transition: flex-grow .3s; min-width: 2px; }
-.area-legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 11px; color: var(--muted); }
-.area-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--c); }
-.area-legend b { color: var(--text); font-weight: 600; }
+  .area-wrap { width: 100%; }
+  .area-bar { display: none; } /* Hide the unified top bar on mobile */
+
+  .area-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 4px;
+  }
+  
+  /* Each rock formation gets a full row with its own bar + name + percentage */
+  .legend-row {
+    display: grid;
+    grid-template-columns: minmax(130px, 1.2fr) 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    font-size: 12px;
+  }
+  .legend-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .legend-bar-track {
+    display: block;
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+    border: 1px solid var(--line);
+  }
+  .legend-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease-out;
+  }
+  .legend-pct { text-align: right; font-size: 12px; }
+}
