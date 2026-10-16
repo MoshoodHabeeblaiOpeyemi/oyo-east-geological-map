@@ -248,6 +248,18 @@ function showDetails(feature, layer, place) {
     risk: "Conduct local geophysical tests before drilling or excavation.",
   };
 
+  const matchedComms = communities.filter((c) => c.f === feature);
+  let commsHTML = "";
+  if (commStatus === "ok") {
+    commsHTML = matchedComms.length
+      ? matchedComms.map((c) => `<span>${esc(c.name)}</span>`).join("")
+      : "<em>None named on this unit</em>";
+  } else if (commStatus === "error") {
+    commsHTML = "<em>Data unavailable</em>";
+  } else {
+    commsHTML = "<em>Loading…</em>";
+  }
+
   document.getElementById("info-panel").className = "";
   document.getElementById("info-panel").innerHTML = `
     <div class="info-card" style="--c:${getRockColor(rockType)}">
@@ -275,16 +287,7 @@ function showDetails(feature, layer, place) {
 
       <div class="data-row stack">
         <span class="data-label">Communities on this unit</span>
-        <span class="chips">${
-          commStatus === "ok"
-            ? communities
-                .filter((c) => c.f === feature)
-                .map((c) => `<span>${esc(c.name)}</span>`)
-                .join("") || "<em>None named</em>"
-            : commStatus === "error"
-              ? "<em>Data unavailable</em>"
-              : "<em>Loading…</em>"
-        }</span>
+        <span class="chips">${commsHTML}</span>
       </div>
     </div>`;
 }
@@ -449,7 +452,6 @@ function goToPlace(p) {
   }
 }
 
-// UPGRADED MULTI-INDEX SEARCH ENGINE
 async function runSearch() {
   const q = searchInput.value.trim();
   if (!q) {
@@ -458,14 +460,12 @@ async function runSearch() {
   }
   const ql = q.toLowerCase();
 
-  // 1. Search Formations by Map Code or Rock Type
   const codeOrTypeMatches = geojsonData.features.filter((f) =>
     `${f.properties["Map Code"] || ""} ${f.properties["Rock Type"] || ""}`
       .toLowerCase()
       .includes(ql),
   );
 
-  // 2. Search Formations by Practical Keywords (e.g. "borehole", "cement", "gold", "granite")
   const keywordMatches = geojsonData.features.filter((f) => {
     const t = f.properties["Rock Type"] || "";
     const info = INSIGHTS[t] || {};
@@ -474,7 +474,6 @@ async function runSearch() {
     return fullText.includes(ql) && !codeOrTypeMatches.includes(f);
   });
 
-  // 3. Search Loaded Local Communities (Instant Offline Match!)
   const localCommMatches = communities.filter((c) =>
     c.name.toLowerCase().includes(ql),
   );
@@ -482,7 +481,6 @@ async function runSearch() {
   resultsBox.hidden = false;
   const li = [];
 
-  // Render Local Communities
   if (localCommMatches.length) {
     li.push('<li class="sr-group">🏘️ Local Communities & Quarters</li>');
     localCommMatches.forEach((c) => {
@@ -492,7 +490,6 @@ async function runSearch() {
     });
   }
 
-  // Render Formation Code/Type Matches
   if (codeOrTypeMatches.length) {
     li.push('<li class="sr-group">🗺️ Geological Formations</li>');
     codeOrTypeMatches.forEach((f) => {
@@ -503,7 +500,6 @@ async function runSearch() {
     });
   }
 
-  // Render Utility/Resource Keyword Matches
   if (keywordMatches.length) {
     li.push('<li class="sr-group">🛠️ Matching Practical Resources</li>');
     keywordMatches.forEach((f) => {
@@ -514,7 +510,6 @@ async function runSearch() {
     });
   }
 
-  // Render Search UI or fetch Nominatim fallback
   if (!li.length) {
     resultsBox.innerHTML =
       '<li class="sr-empty">Searching external map sources…</li>';
@@ -575,79 +570,96 @@ document.addEventListener("click", (e) => {
   if (!e.target.closest(".search-wrap")) resultsBox.hidden = true;
 });
 
+// ROBUST ISOLATED COMMUNITY LOADING
 async function loadCommunities() {
-  const b = L.geoJSON(geojsonData).getBounds();
-  const key = "oyo-east-places-final-v2";
-  let els = null;
+  let local = [];
   try {
-    els = JSON.parse(localStorage.getItem(key));
-  } catch (e) {}
+    const res = await fetch("communities-local.json");
+    if (res.ok) local = await res.json();
+  } catch (e) {
+    console.warn("Could not load local communities file", e);
+  }
+
+  let els = [];
   try {
-    if (!els) {
-      const q = `[out:json][timeout:25];nwr["place"~"^(city|town|village|suburb|hamlet|neighbourhood|quarter|locality)$"]["name"](${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()});out center;`;
+    const key = "oyo-east-places-final-v2";
+    try {
+      els = JSON.parse(localStorage.getItem(key));
+    } catch (e) {}
+    if (!els && geojsonData) {
+      const b = L.geoJSON(geojsonData).getBounds();
+      const q = `[out:json][timeout:15];nwr["place"~"^(city|town|village|suburb|hamlet|neighbourhood|quarter|locality)$"]["name"](${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()});out center;`;
       const res = await fetch("https://overpass-api.de/api/interpreter", {
         method: "POST",
         body: new URLSearchParams({ data: q }),
       });
-      if (!res.ok) throw new Error(res.status);
-      els = (await res.json()).elements;
-      try {
-        localStorage.setItem(key, JSON.stringify(els));
-      } catch (e) {}
+      if (res.ok) {
+        const data = await res.json();
+        els = data.elements || [];
+        try {
+          localStorage.setItem(key, JSON.stringify(els));
+        } catch (e) {}
+      }
     }
-    const seen = new Set();
-    const local = await fetch("communities-local.json")
-      .then((r) => (r.ok ? r.json() : []))
-      .catch(() => []);
-    communities = [
-      ...local.map((c) => ({
-        name: c.name,
-        kind: "local",
-        lat: +c.lat,
-        lon: +c.lon,
-      })),
-      ...els.map((e) => ({
-        name: e.tags.name,
-        kind: e.tags.place,
-        lat: e.lat ?? e.center?.lat,
-        lon: e.lon ?? e.center?.lon,
-      })),
-    ]
-      .filter((c) => Number.isFinite(c.lat) && Number.isFinite(c.lon))
-      .filter(
-        (c) =>
-          !seen.has(c.name.toLowerCase()) && seen.add(c.name.toLowerCase()),
-      )
-      .map((c) => ({
-        ...c,
-        f: geojsonData.features.find((f) =>
-          turf.booleanPointInPolygon(turf.point([c.lon, c.lat]), f),
-        ),
-      }))
-      .filter((c) => c.f)
-      .sort(
-        (a, b) =>
-          (KIND_RANK[a.kind] ?? 9) - (KIND_RANK[b.kind] ?? 9) ||
-          a.name.localeCompare(b.name),
-      );
-    commStatus = "ok";
-    communities.forEach((c) =>
-      L.circleMarker([c.lat, c.lon], {
-        pane: "places",
-        radius: 4,
-        color: "#0e1517",
-        weight: 1.5,
-        fillColor: "#fff",
-        fillOpacity: 1,
-      })
-        .bindTooltip(`<strong>${esc(c.name)}</strong>`, {
-          className: "rock-tip",
-        })
-        .on("click", () => focusFormation(c.f, c.name))
-        .addTo(map),
-    );
   } catch (e) {
-    console.error("Communities failed:", e);
-    commStatus = "error";
+    console.warn("Overpass API unavailable, using local communities only", e);
+  }
+
+  const seen = new Set();
+  const raw = [
+    ...(local || []).map((c) => ({
+      name: c.name,
+      kind: "local",
+      lat: +c.lat,
+      lon: +c.lon,
+    })),
+    ...(els || []).map((e) => ({
+      name: e.tags?.name,
+      kind: e.tags?.place,
+      lat: e.lat ?? e.center?.lat,
+      lon: e.lon ?? e.center?.lon,
+    })),
+  ];
+
+  communities = raw
+    .filter((c) => c.name && Number.isFinite(c.lat) && Number.isFinite(c.lon))
+    .filter(
+      (c) => !seen.has(c.name.toLowerCase()) && seen.add(c.name.toLowerCase()),
+    )
+    .map((c) => ({
+      ...c,
+      f: geojsonData
+        ? geojsonData.features.find((f) =>
+            turf.booleanPointInPolygon(turf.point([c.lon, c.lat]), f),
+          )
+        : null,
+    }))
+    .filter((c) => c.f)
+    .sort(
+      (a, b) =>
+        (KIND_RANK[a.kind] ?? 9) - (KIND_RANK[b.kind] ?? 9) ||
+        a.name.localeCompare(b.name),
+    );
+
+  commStatus = "ok";
+
+  // Add circle markers for communities to the map
+  communities.forEach((c) =>
+    L.circleMarker([c.lat, c.lon], {
+      pane: "places",
+      radius: 4,
+      color: "#0e1517",
+      weight: 1.5,
+      fillColor: "#fff",
+      fillOpacity: 1,
+    })
+      .bindTooltip(`<strong>${esc(c.name)}</strong>`, { className: "rock-tip" })
+      .on("click", () => focusFormation(c.f, c.name))
+      .addTo(map),
+  );
+
+  // If a formation is currently selected, refresh panel to immediately render communities chips
+  if (selectedLayer) {
+    showDetails(selectedLayer.feature, selectedLayer);
   }
 }
