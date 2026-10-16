@@ -175,7 +175,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .legend-row { display: inline-flex; align-items: center; gap: 6px; }
 .legend-label { display: inline-flex; align-items: center; }
 .legend-label i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--c); flex-shrink: 0; }
-.legend-bar-track { display: none; } /* Hidden on desktop */
+.legend-bar-track { display: none; }
 .legend-pct { color: var(--text); font-weight: 600; }
 
 /* Search dropdown */
@@ -202,12 +202,12 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
   .dashboard {
     height: auto; grid-template-columns: 1fr;
     grid-template-rows: auto;
-    /* NEW MOBILE STACK ORDER: Nav -> Rock Types -> Map -> Formation Details -> Stats */
+    /* RE-ORDERED MOBILE STACK: Nav -> Map -> Formation Details -> Rock Types -> Stats */
     grid-template-areas:
       "nav"
-      "side"
       "map"
       "panel"
+      "side"
       "stats";
   }
   .map-container { height: 50vh; min-height: 350px; }
