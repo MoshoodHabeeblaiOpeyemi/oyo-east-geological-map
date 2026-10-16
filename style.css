@@ -202,10 +202,11 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
   .dashboard {
     height: auto; grid-template-columns: 1fr;
     grid-template-rows: auto;
+    /* NEW MOBILE STACK ORDER: Nav -> Rock Types -> Map -> Formation Details -> Stats */
     grid-template-areas:
       "nav"
-      "map"
       "side"
+      "map"
       "panel"
       "stats";
   }
@@ -238,7 +239,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
   .stat span { font-size: 11px; text-transform: lowercase; }
 
   .area-wrap { width: 100%; }
-  .area-bar { display: none; } /* Hide the unified top bar on mobile */
+  .area-bar { display: none; }
 
   .area-legend {
     display: flex;
@@ -248,7 +249,6 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
     margin-top: 4px;
   }
   
-  /* Each rock formation gets a full row with its own bar + name + percentage */
   .legend-row {
     display: grid;
     grid-template-columns: minmax(130px, 1.2fr) 1fr 40px;
